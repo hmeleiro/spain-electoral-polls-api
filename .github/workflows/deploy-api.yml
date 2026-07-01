@@ -117,5 +117,18 @@ jobs:
           fi
 
           docker run "${docker_args[@]}" "$API_IMAGE_NAME"
-          curl -f "http://localhost:$API_PORT/health"
+
+          for attempt in $(seq 1 20); do
+            if curl -fsS "http://localhost:$API_PORT/health"; then
+              exit 0
+            fi
+            echo "Waiting for API healthcheck... attempt $attempt/20"
+            sleep 2
+          done
+
+          echo "API healthcheck failed. Container status:"
+          docker ps -a --filter "name=$API_CONTAINER_NAME"
+          echo "Container logs:"
+          docker logs "$API_CONTAINER_NAME" || true
+          exit 1
           REMOTE
