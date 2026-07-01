@@ -109,6 +109,7 @@ jobs:
             --name "$API_CONTAINER_NAME"
             --restart unless-stopped
             --env-file "$API_ENV_FILE_PATH"
+            --add-host host.docker.internal:host-gateway
             -p "$API_PORT:8000"
           )
 
