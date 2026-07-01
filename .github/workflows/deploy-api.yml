@@ -1,0 +1,104 @@
+name: deploy-api
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: spainelectoralpollsdb_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/spainelectoralpollsdb_test
+      API_ENV: test
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      CORS_ORIGINS: http://localhost:3000
+      ENABLE_ADMIN_ENDPOINTS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        working-directory: api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Lint
+        working-directory: api
+        run: ruff check .
+      - name: Test
+        working-directory: api
+        run: pytest
+      - name: Build Docker image
+        run: docker build -t spain-electoral-polls-api:ci ./api
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}
+      REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+      REMOTE_APP_DIR: ${{ secrets.REMOTE_APP_DIR }}
+      API_ENV_FILE_PATH: ${{ secrets.API_ENV_FILE_PATH }}
+      REMOTE_DOCKER_NETWORK: ${{ vars.REMOTE_DOCKER_NETWORK }}
+      API_CONTAINER_NAME: ${{ vars.API_CONTAINER_NAME || 'spain-electoral-polls-api' }}
+      API_IMAGE_NAME: ${{ vars.API_IMAGE_NAME || 'spain-electoral-polls-api:latest' }}
+      API_PORT: ${{ vars.API_PORT || '8000' }}
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.REMOTE_SSH_KEY }}" > ~/.ssh/deploy_key
+          ssh-keyscan -p "$REMOTE_PORT" "$REMOTE_HOST" >> ~/.ssh/known_hosts
+      - name: Deploy on remote host
+        run: |
+          remote_env=(
+            "REMOTE_APP_DIR=$(printf '%q' "$REMOTE_APP_DIR")"
+            "API_ENV_FILE_PATH=$(printf '%q' "$API_ENV_FILE_PATH")"
+            "REMOTE_DOCKER_NETWORK=$(printf '%q' "$REMOTE_DOCKER_NETWORK")"
+            "API_CONTAINER_NAME=$(printf '%q' "$API_CONTAINER_NAME")"
+            "API_IMAGE_NAME=$(printf '%q' "$API_IMAGE_NAME")"
+            "API_PORT=$(printf '%q' "$API_PORT")"
+          )
+
+          ssh -i ~/.ssh/deploy_key -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "${remote_env[*]} bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          cd "$REMOTE_APP_DIR"
+          git pull origin main
+
+          docker build -t "$API_IMAGE_NAME" ./api
+          docker stop "$API_CONTAINER_NAME" || true
+          docker rm "$API_CONTAINER_NAME" || true
+
+          docker_args=(
+            -d
+            --name "$API_CONTAINER_NAME"
+            --restart unless-stopped
+            --env-file "$API_ENV_FILE_PATH"
+            -p "$API_PORT:8000"
+          )
+
+          if [ -n "${REMOTE_DOCKER_NETWORK:-}" ]; then
+            docker_args+=(--network "$REMOTE_DOCKER_NETWORK")
+          fi
+
+          docker run "${docker_args[@]}" "$API_IMAGE_NAME"
+          curl -f "http://localhost:$API_PORT/health"
+          REMOTE

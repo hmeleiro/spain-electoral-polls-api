@@ -1,0 +1,59 @@
+# Project-local prompts / scratch files
+initial-prompt.md
+initial-prompt.md.txt
+
+# Environment files and secrets
+.env*
+**/.env*
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+
+# Packaging / build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+*.whl
+
+# Test, lint and coverage artifacts
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# FastAPI / local runtime artifacts
+*.log
+logs/
+*.pid
+
+# PostgreSQL / database local exports
+*.dump
+*.backup
+*.sql.gz
+
+# Docker local overrides
+docker-compose.override.yml
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
