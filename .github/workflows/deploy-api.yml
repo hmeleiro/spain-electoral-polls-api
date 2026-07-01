@@ -80,8 +80,18 @@ jobs:
           ssh -i ~/.ssh/deploy_key -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "${remote_env[*]} bash -s" <<'REMOTE'
           set -euo pipefail
 
+          API_ENV_FILE_PATH="$(printf '%s' "$API_ENV_FILE_PATH" | tr -d '\r' | xargs)"
+
           cd "$REMOTE_APP_DIR"
           git pull origin main
+
+          if [ ! -f "$API_ENV_FILE_PATH" ]; then
+            echo "API env file not found on remote host. Check API_ENV_FILE_PATH."
+            echo "Remote user: $(whoami)"
+            echo "Remote cwd: $(pwd)"
+            echo "Expected env file directory exists: $(test -d "$(dirname "$API_ENV_FILE_PATH")" && echo yes || echo no)"
+            exit 1
+          fi
 
           docker build -t "$API_IMAGE_NAME" ./api
           docker stop "$API_CONTAINER_NAME" || true
