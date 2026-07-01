@@ -97,6 +97,13 @@ jobs:
           docker stop "$API_CONTAINER_NAME" || true
           docker rm "$API_CONTAINER_NAME" || true
 
+          if command -v ss >/dev/null 2>&1 && ss -ltn "( sport = :$API_PORT )" | grep -q ":$API_PORT"; then
+            echo "Port $API_PORT is already in use on the remote host."
+            echo "Free the port or set the API_PORT repository variable to another host port."
+            ss -ltnp "( sport = :$API_PORT )" || true
+            exit 1
+          fi
+
           docker_args=(
             -d
             --name "$API_CONTAINER_NAME"
