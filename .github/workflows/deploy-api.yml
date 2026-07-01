@@ -55,10 +55,10 @@ jobs:
       REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
       REMOTE_APP_DIR: ${{ secrets.REMOTE_APP_DIR }}
       API_ENV_FILE_PATH: ${{ secrets.API_ENV_FILE_PATH }}
-      REMOTE_DOCKER_NETWORK: ${{ vars.REMOTE_DOCKER_NETWORK }}
-      API_CONTAINER_NAME: ${{ vars.API_CONTAINER_NAME || 'spain-electoral-polls-api' }}
-      API_IMAGE_NAME: ${{ vars.API_IMAGE_NAME || 'spain-electoral-polls-api:latest' }}
-      API_PORT: ${{ vars.API_PORT || '8000' }}
+      REMOTE_DOCKER_NETWORK: ${{ vars.REMOTE_DOCKER_NETWORK || secrets.REMOTE_DOCKER_NETWORK }}
+      API_CONTAINER_NAME: ${{ vars.API_CONTAINER_NAME || secrets.API_CONTAINER_NAME || 'spain-electoral-polls-api' }}
+      API_IMAGE_NAME: ${{ vars.API_IMAGE_NAME || secrets.API_IMAGE_NAME || 'spain-electoral-polls-api:latest' }}
+      API_PORT: ${{ vars.API_PORT || secrets.API_PORT || '8000' }}
     steps:
       - name: Configure SSH
         run: |
