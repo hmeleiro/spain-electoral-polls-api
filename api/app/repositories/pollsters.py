@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from app.models.election import Election
 from app.models.poll import Poll
 from app.models.pollster import Pollster
-from app.repositories.common import count_from_select, paginate_query
+from app.repositories.common import QueryValues, count_from_select, equals_any, paginate_query
 
 
 def list_pollsters(
     db: Session,
     *,
-    election_key: str | None,
+    election_key: QueryValues,
     territory_code: str | None,
     active_only: bool,
     limit: int,
@@ -31,8 +31,9 @@ def list_pollsters(
         .join(Poll, and_(*join_conditions))
         .join(Election, Election.id == Poll.election_id)
     )
-    if election_key:
-        where_conditions.append(Election.election_key == election_key)
+    condition = equals_any(Election.election_key, election_key)
+    if condition is not None:
+        where_conditions.append(condition)
     if territory_code:
         where_conditions.append(Election.territory_code == territory_code)
 

@@ -13,11 +13,11 @@ router = APIRouter(prefix="/api/v1/polls", tags=["polls"])
 
 @router.get("", response_model=PaginatedResponse[PollSummary])
 def list_polls(
-    election_key: str | None = None,
+    election_key: list[str] | None = Query(None),
     territory_code: str | None = None,
-    pollster_key: str | None = None,
-    pollster: str | None = None,
-    media: str | None = None,
+    pollster_key: list[str] | None = Query(None),
+    pollster: list[str] | None = Query(None),
+    media: list[str] | None = Query(None),
     fieldwork_start_from: date | None = None,
     fieldwork_start_to: date | None = None,
     fieldwork_end_from: date | None = None,

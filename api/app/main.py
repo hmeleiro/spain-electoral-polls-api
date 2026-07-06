@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routers import elections, health, parties, polls, pollsters, results, timeseries
+from app.routers import admin_manual_review, elections, health, parties, polls, pollsters, results, timeseries
 
 
 def create_app() -> FastAPI:
@@ -18,7 +18,7 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=origins or ["*"],
         allow_credentials=True,
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
 
@@ -29,6 +29,7 @@ def create_app() -> FastAPI:
     app.include_router(polls.router)
     app.include_router(results.router)
     app.include_router(timeseries.router)
+    app.include_router(admin_manual_review.router)
     return app
 
 

@@ -4,22 +4,86 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.election import Election
+from app.models.party import Party
 from app.models.poll import Poll
 from app.models.poll_result import PollResult
 from app.models.pollster import Pollster
-from app.repositories.common import count_from_select, paginate_query, poll_filter_conditions, public_poll_conditions
+from app.models.public_views import ApiPollResultPublic
+from app.repositories.common import (
+    QueryValues,
+    count_from_select,
+    equals_any,
+    ilike_any,
+    lower_equals_any,
+    paginate_query,
+    poll_filter_conditions,
+    pollster_matches_any,
+    public_poll_conditions,
+)
+
+
+def _use_public_result_view(*, include_manual_review: bool, include_inactive: bool) -> bool:
+    return not include_manual_review and not include_inactive
+
+
+def _public_result_conditions(
+    *,
+    election_key: QueryValues,
+    territory_code: str | None,
+    pollster_key: QueryValues,
+    pollster: QueryValues,
+    media: QueryValues,
+    party_key: QueryValues,
+    party: QueryValues,
+    fieldwork_end_from: date | None,
+    fieldwork_end_to: date | None,
+    publication_date_from: date | None,
+    publication_date_to: date | None,
+) -> list:
+    party_filter = party_key or party
+    conditions = []
+    condition = equals_any(ApiPollResultPublic.election_key, election_key)
+    if condition is not None:
+        conditions.append(condition)
+    if territory_code:
+        conditions.append(ApiPollResultPublic.territory_code == territory_code)
+    condition = lower_equals_any(ApiPollResultPublic.pollster_key, pollster_key)
+    if condition is not None:
+        conditions.append(condition)
+    condition = pollster_matches_any(
+        ApiPollResultPublic.pollster_key,
+        ApiPollResultPublic.pollster_name,
+        pollster,
+    )
+    if condition is not None:
+        conditions.append(condition)
+    condition = ilike_any(ApiPollResultPublic.media, media)
+    if condition is not None:
+        conditions.append(condition)
+    condition = lower_equals_any(ApiPollResultPublic.party_key, party_filter)
+    if condition is not None:
+        conditions.append(condition)
+    if fieldwork_end_from:
+        conditions.append(ApiPollResultPublic.fieldwork_end >= fieldwork_end_from)
+    if fieldwork_end_to:
+        conditions.append(ApiPollResultPublic.fieldwork_end <= fieldwork_end_to)
+    if publication_date_from:
+        conditions.append(ApiPollResultPublic.publication_date >= publication_date_from)
+    if publication_date_to:
+        conditions.append(ApiPollResultPublic.publication_date <= publication_date_to)
+    return conditions
 
 
 def list_results(
     db: Session,
     *,
-    election_key: str | None,
+    election_key: QueryValues,
     territory_code: str | None,
-    pollster_key: str | None,
-    pollster: str | None,
-    media: str | None,
-    party_key: str | None,
-    party: str | None,
+    pollster_key: QueryValues,
+    pollster: QueryValues,
+    media: QueryValues,
+    party_key: QueryValues,
+    party: QueryValues,
     fieldwork_end_from: date | None,
     fieldwork_end_to: date | None,
     publication_date_from: date | None,
@@ -29,6 +93,52 @@ def list_results(
     limit: int,
     offset: int,
 ) -> dict:
+    if _use_public_result_view(include_manual_review=include_manual_review, include_inactive=include_inactive):
+        conditions = _public_result_conditions(
+            election_key=election_key,
+            territory_code=territory_code,
+            pollster_key=pollster_key,
+            pollster=pollster,
+            media=media,
+            party_key=party_key,
+            party=party,
+            fieldwork_end_from=fieldwork_end_from,
+            fieldwork_end_to=fieldwork_end_to,
+            publication_date_from=publication_date_from,
+            publication_date_to=publication_date_to,
+        )
+        date_expr = func.coalesce(ApiPollResultPublic.fieldwork_end, ApiPollResultPublic.publication_date).label("date")
+        base_query = (
+            select(
+                ApiPollResultPublic.poll_id.label("poll_id"),
+                date_expr,
+                ApiPollResultPublic.election_key.label("election_key"),
+                ApiPollResultPublic.pollster_key.label("pollster_key"),
+                ApiPollResultPublic.pollster_name.label("pollster_name"),
+                ApiPollResultPublic.media.label("media"),
+                ApiPollResultPublic.fieldwork_end.label("fieldwork_end"),
+                ApiPollResultPublic.publication_date.label("publication_date"),
+                ApiPollResultPublic.sample_size.label("sample_size"),
+                ApiPollResultPublic.party_key.label("party_key"),
+                ApiPollResultPublic.party_raw.label("party_raw"),
+                ApiPollResultPublic.party_name.label("party_name"),
+                ApiPollResultPublic.short_name.label("short_name"),
+                ApiPollResultPublic.color_hex.label("color_hex"),
+                ApiPollResultPublic.display_order.label("display_order"),
+                ApiPollResultPublic.vote_share.label("vote_share"),
+                ApiPollResultPublic.seats_min.label("seats_min"),
+                ApiPollResultPublic.seats_max.label("seats_max"),
+            )
+            .where(*conditions)
+        )
+        query = base_query.order_by(
+            ApiPollResultPublic.fieldwork_end.desc().nulls_last(),
+            ApiPollResultPublic.publication_date.desc().nulls_last(),
+            ApiPollResultPublic.display_order.asc().nulls_last(),
+            ApiPollResultPublic.party_key,
+        )
+        return paginate_query(db, query, count_from_select(base_query), limit=limit, offset=offset)
+
     party_filter = party_key or party
     conditions = [
         *public_poll_conditions(include_manual_review=include_manual_review, include_inactive=include_inactive),
@@ -44,8 +154,9 @@ def list_results(
             publication_date_to=publication_date_to,
         ),
     ]
-    if party_filter:
-        conditions.append(func.lower(PollResult.party_key) == party_filter.lower())
+    condition = lower_equals_any(PollResult.party_key, party_filter)
+    if condition is not None:
+        conditions.append(condition)
 
     date_expr = func.coalesce(Poll.fieldwork_end, Poll.publication_date).label("date")
     base_query = (
@@ -61,6 +172,10 @@ def list_results(
             Poll.sample_size.label("sample_size"),
             PollResult.party_key.label("party_key"),
             PollResult.party_raw.label("party_raw"),
+            func.coalesce(Party.party_name, PollResult.party_raw).label("party_name"),
+            func.coalesce(Party.short_name, PollResult.party_raw).label("short_name"),
+            Party.color_hex.label("color_hex"),
+            Party.display_order.label("display_order"),
             PollResult.vote_share.label("vote_share"),
             PollResult.seats_min.label("seats_min"),
             PollResult.seats_max.label("seats_max"),
@@ -68,11 +183,13 @@ def list_results(
         .join(Poll, Poll.id == PollResult.poll_id)
         .join(Election, Election.id == Poll.election_id)
         .join(Pollster, Pollster.id == Poll.pollster_id)
+        .outerjoin(Party, Party.party_key == PollResult.party_key)
         .where(*conditions)
     )
     query = base_query.order_by(
         Poll.fieldwork_end.desc().nulls_last(),
         Poll.publication_date.desc().nulls_last(),
+        Party.display_order.asc().nulls_last(),
         PollResult.party_key,
     )
     return paginate_query(db, query, count_from_select(base_query), limit=limit, offset=offset)

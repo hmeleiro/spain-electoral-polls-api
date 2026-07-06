@@ -25,14 +25,21 @@ Copy `.env.example` to `.env` for local development and set:
 
 ```text
 DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/spainelectoralpollsdb
+DATABASE_CONNECT_TIMEOUT=5
 API_ENV=development
 API_HOST=0.0.0.0
 API_PORT=8000
 CORS_ORIGINS=http://localhost:3000,https://polls.spainelectoralproject.com
 ENABLE_ADMIN_ENDPOINTS=false
+CACHE_ENABLED=true
+CACHE_TTL_SECONDS=300
+CACHE_MAX_ENTRIES=512
 ```
 
 `ENABLE_ADMIN_ENDPOINTS` is reserved for a future admin surface. No admin endpoints are implemented in v1.
+
+Public read endpoints use an in-memory TTL cache by default. `CACHE_TTL_SECONDS` controls freshness and
+`CACHE_MAX_ENTRIES` bounds the process-local LRU cache size.
 
 ## Local Development
 
@@ -68,6 +75,10 @@ Paginated endpoints return:
 ```
 
 Default public filters exclude `polls.is_active = false` and `polls.identity_status = 'manual_review'`. Use `include_inactive=true` or `include_manual_review=true` to request them explicitly.
+
+For the default public case, `/api/v1/polls` reads from `api_polls_public` and `/api/v1/results` and `/api/v1/timeseries` read from `api_poll_results_public`. These database views already apply the public filters. When a request explicitly includes manual-review or inactive polls, the API falls back to the base tables.
+
+`/api/v1/parties` uses the canonical `parties` catalog and returns party names, short labels, colors, display order, active state, and a public poll count when available.
 
 ## Programmatic Examples
 
@@ -174,13 +185,12 @@ See `DEPLOYMENT.md` for operational commands.
 ## Current Limitations
 
 - Admin endpoints are postponed.
-- There is no `parties` table; `/api/v1/parties` is derived from `poll_results`.
 - There is no persisted `media_key`; media filtering uses `polls.media`.
 - The API does not include authentication in v1 because all implemented endpoints are public and read-only.
 
 ## Documented Discrepancies
 
-- `sql/003_publication_sources.sql` is also part of the SQL truth.
 - Health examples differ between prompt and handoff; v1 returns `status`, `service`, and `database`.
 - `date_field` defaults differ in docs; v1 uses `auto = coalesce(fieldwork_end, publication_date)`.
-- Party and media catalog tables do not exist in SQL.
+- `api_polls_public` exposes `poll_id`; the API maps it to `id` in `/api/v1/polls` for backwards compatibility.
+- There is still no persisted `media_key` table or column.

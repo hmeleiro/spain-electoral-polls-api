@@ -9,6 +9,10 @@ from app.schemas.common import DecimalJSONModel
 class PollResultRead(DecimalJSONModel):
     party_key: str
     party_raw: str | None = None
+    party_name: str | None = None
+    short_name: str | None = None
+    color_hex: str | None = None
+    display_order: int | None = None
     vote_share: Decimal | None = None
     seats_min: int | None = None
     seats_max: int | None = None

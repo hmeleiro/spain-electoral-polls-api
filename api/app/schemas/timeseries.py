@@ -18,6 +18,10 @@ class TimeseriesPoint(DecimalJSONModel):
     sample_size: int | None = None
     party_key: str
     party_raw: str | None = None
+    party_name: str | None = None
+    short_name: str | None = None
+    color_hex: str | None = None
+    display_order: int | None = None
     vote_share: Decimal | None = None
 
     @field_serializer("vote_share")

@@ -8,6 +8,58 @@ from app.models.election import Election
 from app.models.poll import Poll
 from app.models.pollster import Pollster
 
+QueryValues = str | list[str] | None
+
+
+def query_values(value: QueryValues) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        values = [value]
+    else:
+        values = value
+    return [item for item in values if item]
+
+
+def equals_any(column, value: QueryValues):
+    values = query_values(value)
+    if not values:
+        return None
+    if len(values) == 1:
+        return column == values[0]
+    return column.in_(values)
+
+
+def lower_equals_any(column, value: QueryValues):
+    values = [item.lower() for item in query_values(value)]
+    if not values:
+        return None
+    lowered_column = func.lower(column)
+    if len(values) == 1:
+        return lowered_column == values[0]
+    return lowered_column.in_(values)
+
+
+def ilike_any(column, value: QueryValues):
+    values = query_values(value)
+    if not values:
+        return None
+    clauses = [column.ilike(f"%{item}%") for item in values]
+    if len(clauses) == 1:
+        return clauses[0]
+    return or_(*clauses)
+
+
+def pollster_matches_any(key_column, name_column, value: QueryValues):
+    values = [item.lower() for item in query_values(value)]
+    if not values:
+        return None
+    key_column = func.lower(key_column)
+    name_column = func.lower(name_column)
+    if len(values) == 1:
+        return or_(key_column == values[0], name_column == values[0])
+    return or_(key_column.in_(values), name_column.in_(values))
+
 
 def public_poll_conditions(
     *,
@@ -27,11 +79,11 @@ def public_poll_conditions(
 
 def poll_filter_conditions(
     *,
-    election_key: str | None = None,
+    election_key: QueryValues = None,
     territory_code: str | None = None,
-    pollster_key: str | None = None,
-    pollster: str | None = None,
-    media: str | None = None,
+    pollster_key: QueryValues = None,
+    pollster: QueryValues = None,
+    media: QueryValues = None,
     fieldwork_start_from: date | None = None,
     fieldwork_start_to: date | None = None,
     fieldwork_end_from: date | None = None,
@@ -40,22 +92,20 @@ def poll_filter_conditions(
     publication_date_to: date | None = None,
 ) -> list[Any]:
     conditions: list[Any] = []
-    if election_key:
-        conditions.append(Election.election_key == election_key)
+    condition = equals_any(Election.election_key, election_key)
+    if condition is not None:
+        conditions.append(condition)
     if territory_code:
         conditions.append(Election.territory_code == territory_code)
-    if pollster_key:
-        conditions.append(func.lower(Pollster.pollster_key) == pollster_key.lower())
-    if pollster:
-        normalized = pollster.lower()
-        conditions.append(
-            or_(
-                func.lower(Pollster.pollster_key) == normalized,
-                func.lower(Pollster.pollster_name) == normalized,
-            )
-        )
-    if media:
-        conditions.append(Poll.media.ilike(f"%{media}%"))
+    condition = lower_equals_any(Pollster.pollster_key, pollster_key)
+    if condition is not None:
+        conditions.append(condition)
+    condition = pollster_matches_any(Pollster.pollster_key, Pollster.pollster_name, pollster)
+    if condition is not None:
+        conditions.append(condition)
+    condition = ilike_any(Poll.media, media)
+    if condition is not None:
+        conditions.append(condition)
     if fieldwork_start_from:
         conditions.append(Poll.fieldwork_start >= fieldwork_start_from)
     if fieldwork_start_to:

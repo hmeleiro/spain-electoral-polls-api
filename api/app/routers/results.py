@@ -13,13 +13,13 @@ router = APIRouter(prefix="/api/v1/results", tags=["results"])
 
 @router.get("", response_model=PaginatedResponse[PollResultLongRead])
 def list_results(
-    election_key: str | None = None,
+    election_key: list[str] | None = Query(None),
     territory_code: str | None = None,
-    pollster_key: str | None = None,
-    pollster: str | None = None,
-    media: str | None = None,
-    party_key: str | None = None,
-    party: str | None = None,
+    pollster_key: list[str] | None = Query(None),
+    pollster: list[str] | None = Query(None),
+    media: list[str] | None = Query(None),
+    party_key: list[str] | None = Query(None),
+    party: list[str] | None = Query(None),
     fieldwork_end_from: date | None = None,
     fieldwork_end_to: date | None = None,
     publication_date_from: date | None = None,

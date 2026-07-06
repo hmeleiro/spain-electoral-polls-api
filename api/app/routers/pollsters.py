@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/v1/pollsters", tags=["pollsters"])
 
 @router.get("", response_model=PaginatedResponse[PollsterRead])
 def list_pollsters(
-    election_key: str | None = None,
+    election_key: list[str] | None = Query(None),
     territory_code: str | None = None,
     active_only: bool = True,
     limit: int = Query(100, ge=1, le=1000),

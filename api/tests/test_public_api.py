@@ -38,7 +38,24 @@ async def test_polls_returns_paginated_structure(client):
     assert body["limit"] == 100
     assert body["offset"] == 0
     assert body["total"] == 1
+    assert "id" in body["items"][0]
+    assert "poll_id" not in body["items"][0]
     assert body["items"][0]["pollster_name"] == "40dB"
+
+
+@pytest.mark.anyio
+async def test_parties_returns_canonical_catalog(client):
+    response = await client.get("/api/v1/parties", params={"territory_code": "ES", "limit": 5})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] >= 2
+    first_keys = [item["party_key"] for item in body["items"][:2]]
+    assert first_keys == ["psoe", "pp"]
+    assert body["items"][0]["party_name"] == "Partido Socialista Obrero Espanol"
+    assert body["items"][0]["short_name"] == "PSOE"
+    assert body["items"][0]["color_hex"] == "#e30613"
+    assert "party_raw" not in body["items"][0]
 
 
 @pytest.mark.anyio
@@ -49,8 +66,16 @@ async def test_poll_detail_includes_results(client):
     assert response.status_code == 200
     body = response.json()
     assert body["id"] == poll_id
-    assert len(body["results"]) == 2
-    assert {item["party_key"] for item in body["results"]} == {"pp", "psoe"}
+    assert len(body["results"]) == 3
+    assert {item["party_key"] for item in body["results"]} == {"new_party", "pp", "psoe"}
+    psoe = next(item for item in body["results"] if item["party_key"] == "psoe")
+    unknown = next(item for item in body["results"] if item["party_key"] == "new_party")
+    assert psoe["party_name"] == "Partido Socialista Obrero Espanol"
+    assert psoe["short_name"] == "PSOE"
+    assert psoe["color_hex"] == "#e30613"
+    assert unknown["party_name"] == "New Party"
+    assert unknown["short_name"] == "New Party"
+    assert unknown["color_hex"] is None
 
 
 @pytest.mark.anyio
@@ -62,8 +87,24 @@ async def test_results_returns_long_format(client):
     assert body["total"] == 1
     item = body["items"][0]
     assert item["party_key"] == "psoe"
+    assert item["party_name"] == "Partido Socialista Obrero Espanol"
+    assert item["short_name"] == "PSOE"
+    assert item["color_hex"] == "#e30613"
     assert item["vote_share"] == 31.2
     assert item["fieldwork_end"] == "2026-06-05"
+
+
+@pytest.mark.anyio
+async def test_results_accepts_multiple_party_keys(client):
+    response = await client.get(
+        "/api/v1/results",
+        params=[("party_key", "psoe"), ("party_key", "pp")],
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 2
+    assert {item["party_key"] for item in body["items"]} == {"psoe", "pp"}
 
 
 @pytest.mark.anyio
@@ -73,6 +114,7 @@ async def test_timeseries_auto_uses_fieldwork_end(client):
     assert response.status_code == 200
     item = response.json()["items"][0]
     assert item["date"] == "2026-06-05"
+    assert item["party_name"] == "Partido Socialista Obrero Espanol"
 
 
 @pytest.mark.anyio
@@ -85,6 +127,40 @@ async def test_timeseries_publication_date_mode(client):
     assert response.status_code == 200
     item = response.json()["items"][0]
     assert item["date"] == "2026-06-07"
+
+
+@pytest.mark.anyio
+async def test_timeseries_accepts_multiple_party_keys_with_manual_review(client):
+    response = await client.get(
+        "/api/v1/timeseries",
+        params=[
+            ("party_key", "psoe"),
+            ("party_key", "pp"),
+            ("include_manual_review", "true"),
+        ],
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 4
+    assert {item["party_key"] for item in body["items"]} == {"psoe", "pp"}
+
+
+@pytest.mark.anyio
+async def test_polls_accepts_multiple_media_values(client):
+    response = await client.get(
+        "/api/v1/polls",
+        params=[
+            ("media", "El Pais"),
+            ("media", "La Sexta"),
+            ("include_inactive", "true"),
+        ],
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 2
+    assert {item["media"] for item in body["items"]} == {"El Pais", "La Sexta"}
 
 
 @pytest.mark.anyio

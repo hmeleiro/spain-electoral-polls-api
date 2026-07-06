@@ -17,8 +17,12 @@ class Settings(BaseSettings):
     api_env: str = Field(default="development", alias="API_ENV")
     api_host: str = Field(default="0.0.0.0", alias="API_HOST")
     api_port: int = Field(default=8000, alias="API_PORT")
+    database_connect_timeout: int = Field(default=5, alias="DATABASE_CONNECT_TIMEOUT")
     cors_origins: str = Field(default="", alias="CORS_ORIGINS")
     enable_admin_endpoints: bool = Field(default=False, alias="ENABLE_ADMIN_ENDPOINTS")
+    cache_enabled: bool = Field(default=True, alias="CACHE_ENABLED")
+    cache_ttl_seconds: int = Field(default=300, alias="CACHE_TTL_SECONDS")
+    cache_max_entries: int = Field(default=512, alias="CACHE_MAX_ENTRIES")
 
     @property
     def cors_origin_list(self) -> list[str]:

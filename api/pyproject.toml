@@ -32,6 +32,9 @@ include = ["app*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+    "no_db: tests that do not require the PostgreSQL test database",
+]
 
 [tool.ruff]
 target-version = "py312"
