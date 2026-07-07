@@ -57,3 +57,8 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Frontend artifacts
+node_modules/
+admin-ui/node_modules/
+admin-ui/dist/
