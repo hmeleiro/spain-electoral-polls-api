@@ -58,7 +58,6 @@ jobs:
       REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
       REMOTE_USER: ${{ secrets.REMOTE_USER }}
       REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-      REMOTE_APP_DIR: ${{ secrets.REMOTE_APP_DIR }}
       ADMIN_UI_REMOTE_DIR: ${{ vars.ADMIN_UI_REMOTE_DIR || secrets.ADMIN_UI_REMOTE_DIR }}
 
     steps:
@@ -77,6 +76,13 @@ jobs:
 
       - name: Deploy to remote server
         run: |
-          remote_dir="${ADMIN_UI_REMOTE_DIR:-$REMOTE_APP_DIR/api/admin-ui/dist}"
+          if [ -z "$ADMIN_UI_REMOTE_DIR" ]; then
+            echo "ADMIN_UI_REMOTE_DIR is not set. Configure it as a repository variable or secret."
+            exit 1
+          fi
+
+          remote_dir="$ADMIN_UI_REMOTE_DIR"
+          echo "Deploying admin-ui to: $remote_dir"
           ssh -i ~/.ssh/deploy_key -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "mkdir -p '$remote_dir'"
           rsync -az --delete -e "ssh -i ~/.ssh/deploy_key -p $REMOTE_PORT" dist/ "$REMOTE_USER@$REMOTE_HOST:$remote_dir/"
+          ssh -i ~/.ssh/deploy_key -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "ls -la '$remote_dir' && test -f '$remote_dir/index.html'"
