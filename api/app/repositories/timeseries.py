@@ -101,6 +101,8 @@ def list_timeseries(
                 ApiPollResultPublic.color_hex.label("color_hex"),
                 ApiPollResultPublic.display_order.label("display_order"),
                 ApiPollResultPublic.vote_share.label("vote_share"),
+                ApiPollResultPublic.seats_min.label("seats_min"),
+                ApiPollResultPublic.seats_max.label("seats_max"),
             )
             .where(*conditions)
         )
@@ -148,6 +150,8 @@ def list_timeseries(
             Party.color_hex.label("color_hex"),
             Party.display_order.label("display_order"),
             PollResult.vote_share.label("vote_share"),
+            PollResult.seats_min.label("seats_min"),
+            PollResult.seats_max.label("seats_max"),
         )
         .join(Poll, Poll.id == PollResult.poll_id)
         .join(Election, Election.id == Poll.election_id)

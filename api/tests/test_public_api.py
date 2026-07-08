@@ -115,6 +115,8 @@ async def test_timeseries_auto_uses_fieldwork_end(client):
     item = response.json()["items"][0]
     assert item["date"] == "2026-06-05"
     assert item["party_name"] == "Partido Socialista Obrero Espanol"
+    assert item["seats_min"] == 120
+    assert item["seats_max"] == 125
 
 
 @pytest.mark.anyio
@@ -144,6 +146,9 @@ async def test_timeseries_accepts_multiple_party_keys_with_manual_review(client)
     body = response.json()
     assert body["total"] == 4
     assert {item["party_key"] for item in body["items"]} == {"psoe", "pp"}
+    psoe = next(item for item in body["items"] if item["party_key"] == "psoe")
+    assert psoe["seats_min"] == 120
+    assert psoe["seats_max"] == 125
 
 
 @pytest.mark.anyio

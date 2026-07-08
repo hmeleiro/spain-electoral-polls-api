@@ -173,8 +173,8 @@ def reset_database(request):
                         poll_id, party_key, party_raw, vote_share, seats_min, seats_max, raw_value
                     )
                     values
-                      (:poll_id, 'psoe', 'PSOE', :psoe_share, null, null, :psoe_raw),
-                      (:poll_id, 'pp', 'PP', :pp_share, null, null, :pp_raw)
+                      (:poll_id, 'psoe', 'PSOE', :psoe_share, 120, 125, :psoe_raw),
+                      (:poll_id, 'pp', 'PP', :pp_share, 110, 115, :pp_raw)
                     """
                 ),
                 {

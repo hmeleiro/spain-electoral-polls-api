@@ -23,6 +23,8 @@ class TimeseriesPoint(DecimalJSONModel):
     color_hex: str | None = None
     display_order: int | None = None
     vote_share: Decimal | None = None
+    seats_min: int | None = None
+    seats_max: int | None = None
 
     @field_serializer("vote_share")
     def serialize_vote_share(self, value: Decimal | None) -> float | None:
