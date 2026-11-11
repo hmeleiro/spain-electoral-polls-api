@@ -1,6 +1,12 @@
 # Project-local prompts / scratch files
 initial-prompt.md
 initial-prompt.md.txt
+# Hugo site output (the source in docs/ is versioned)
+docs/public/
+docs/resources/_gen/
+docs/.tmp/
+docs/.hugo_build.lock
+docs/hugo_stats.json
 
 # Environment files and secrets
 .env*

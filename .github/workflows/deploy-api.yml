@@ -3,6 +3,10 @@ name: deploy-api
 on:
   push:
     branches: [main]
+    paths:
+      - "api/**"
+      - "sql/**"
+      - ".github/workflows/deploy-api.yml"
   workflow_dispatch:
 
 jobs:
@@ -85,7 +89,8 @@ jobs:
           API_ENV_FILE_PATH="$(printf '%s' "$API_ENV_FILE_PATH" | tr -d '\r' | xargs)"
 
           cd "$REMOTE_APP_DIR"
-          git pull origin main
+          git fetch origin main
+          git reset --hard origin/main
 
           if [ ! -f "$API_ENV_FILE_PATH" ]; then
             echo "API env file not found on remote host. Check API_ENV_FILE_PATH."

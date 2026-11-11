@@ -29,7 +29,7 @@ DATABASE_CONNECT_TIMEOUT=5
 API_ENV=development
 API_HOST=0.0.0.0
 API_PORT=8000
-CORS_ORIGINS=http://localhost:3000,https://polls.spainelectoralproject.com
+CORS_ORIGINS=http://localhost:3000,https://polls.spainelectoralproject.com,https://hmeleiro.github.io
 ENABLE_ADMIN_ENDPOINTS=false
 CACHE_ENABLED=true
 CACHE_TTL_SECONDS=300
@@ -67,6 +67,17 @@ Open:
 - `GET /api/v1/polls/{poll_id}`
 - `GET /api/v1/results`
 - `GET /api/v1/timeseries`
+
+## Documentation site
+
+The public documentation website is a Hugo project in `docs/`. Build it locally with:
+
+```bash
+hugo --source docs
+```
+
+GitHub Actions deploys the generated static site to GitHub Pages after changes under `docs/` reach `main`.
+The production API must allow the Pages origin (`https://hmeleiro.github.io`) in `CORS_ORIGINS` for the live explorer to work.
 
 Paginated endpoints return:
 
