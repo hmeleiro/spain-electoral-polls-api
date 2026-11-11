@@ -1,4 +1,4 @@
-baseURL = "https://hmeleiro.github.io/spain-electoral-polls-api/"
+baseURL = "https://pollsdb-api.spainelectoralproject.com/"
 languageCode = "es"
 defaultContentLanguage = "es"
 title = "Spain Electoral Polls API"
@@ -11,11 +11,11 @@ disableKinds = ["taxonomy", "term"]
 [params]
   description = "API abierta de encuestas electorales españolas para análisis, periodismo y aplicaciones." 
   author = "Héctor Meleiro"
-  apiBaseURL = "https://polls.spainelectoralproject.com"
+  apiBaseURL = "https://pollsdb.spainelectoralproject.com"
   github = "https://github.com/hmeleiro/spain-electoral-polls-api"
   parentProject = "https://spainelectoralproject.com/"
   dashboard = "https://polls.spainelectoralproject.com/"
-  swagger = "https://polls.spainelectoralproject.com/docs"
+  swagger = "https://pollsdb.spainelectoralproject.com/docs"
 
 [menus]
   [[menus.main]]

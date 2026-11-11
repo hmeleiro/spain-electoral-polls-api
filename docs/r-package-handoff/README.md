@@ -63,9 +63,9 @@ En local, con el servidor arrancado:
 
 En produccion, si el dominio esta activo:
 
-- Swagger UI: `https://polls.spainelectoralproject.com/docs`
-- ReDoc: `https://polls.spainelectoralproject.com/redoc`
-- OpenAPI JSON: `https://polls.spainelectoralproject.com/openapi.json`
+- Swagger UI: `https://pollsdb.spainelectoralproject.com/docs`
+- ReDoc: `https://pollsdb.spainelectoralproject.com/redoc`
+- OpenAPI JSON: `https://pollsdb.spainelectoralproject.com/openapi.json`
 
 Tambien se ha generado una copia estatica en `docs/r-package-handoff/openapi.json`.
 

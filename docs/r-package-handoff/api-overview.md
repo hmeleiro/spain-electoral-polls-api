@@ -6,7 +6,7 @@ Name: Spain Electoral Polls API
 
 Objective: expose read-only polling data from the Spain Electoral Polls database as JSON for dashboards, external programmatic use, and the future R package `spainpolls`.
 
-Base URL: `https://polls.spainelectoralproject.com`
+Base URL: `https://pollsdb.spainelectoralproject.com`
 
 Local base URL: `http://localhost:8000`
 

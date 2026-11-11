@@ -67,7 +67,7 @@
     <div class="explorer">
       <form id="api-explorer" class="explorer-form">
         <label><span>Recurso</span><select id="explorer-endpoint" name="endpoint"><option value="/api/v1/polls">Encuestas</option><option value="/api/v1/results">Resultados</option><option value="/api/v1/timeseries" selected>Series temporales</option><option value="/api/v1/elections">Elecciones</option><option value="/api/v1/parties">Partidos</option><option value="/api/v1/pollsters">Encuestadoras</option><option value="/health">Estado del servicio</option></select></label>
-        <label class="filter-field"><span>Elección <small>opcional</small></span><input id="explorer-election" name="election_key" placeholder="congreso_espana_2027"></label>
+        <label class="filter-field"><span>Elección <small>opcional</small></span><input id="explorer-election" name="election_key" placeholder="congreso_espana_2026"></label>
         <label class="filter-field party-field"><span>Partido <small>opcional</small></span><input id="explorer-party" name="party" placeholder="psoe"></label>
         <label class="filter-field"><span>Encuestadora <small>opcional</small></span><input id="explorer-pollster" name="pollster" placeholder="40dB"></label>
         <label class="limit-field"><span>Límite</span><select id="explorer-limit" name="limit"><option>5</option><option selected>10</option><option>25</option><option>100</option></select></label>
@@ -98,7 +98,7 @@
 
 <section class="principles">
   <div class="container principles-grid">
-    <div><p class="eyebrow">Diseñada para reutilizar</p><h2>Datos públicos con contexto, no solo números.</h2><p>La API conserva las fuentes, el periodo de trabajo de campo y la identidad de cada encuestadora para que cada cifra pueda interpretarse y auditarse.</p></div>
+    <div><p class="eyebrow">Diseñada para reutilizar</p><h2>Datos públicos con contexto.</h2><p>La API conserva las fuentes, el periodo de trabajo de campo y la identidad de cada encuestadora para que cada cifra pueda interpretarse y auditarse.</p></div>
     <ul><li><span>01</span><div><strong>Solo lectura</strong><p>Consultas seguras que no modifican la base de datos.</p></div></li><li><span>02</span><div><strong>Filtros consistentes</strong><p>Elección, territorio, partido, encuestadora y fechas.</p></div></li><li><span>03</span><div><strong>Fuentes trazables</strong><p>Enlaces a la publicación original cuando están disponibles.</p></div></li></ul>
   </div>
 </section>

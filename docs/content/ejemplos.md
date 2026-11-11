@@ -10,19 +10,19 @@ Todos los ejemplos usan la API de producción. No hace falta enviar credenciales
 Lista las diez encuestas más recientes de una elección:
 
 ```bash
-curl "https://polls.spainelectoralproject.com/api/v1/polls?election_key=congreso_espana_2027&limit=10"
+curl "https://pollsdb.spainelectoralproject.com/api/v1/polls?election_key=congreso_espana_2027&limit=10"
 ```
 
 Consulta estimaciones de varios partidos repitiendo el parámetro:
 
 ```bash
-curl "https://polls.spainelectoralproject.com/api/v1/results?party=psoe&party=pp&limit=100"
+curl "https://pollsdb.spainelectoralproject.com/api/v1/results?party=psoe&party=pp&limit=100"
 ```
 
 Comprueba el estado del servicio:
 
 ```bash
-curl "https://polls.spainelectoralproject.com/health"
+curl "https://pollsdb.spainelectoralproject.com/health"
 ```
 
 ## Python
@@ -30,7 +30,7 @@ curl "https://polls.spainelectoralproject.com/health"
 ```python
 import requests
 
-url = "https://polls.spainelectoralproject.com/api/v1/timeseries"
+url = "https://pollsdb.spainelectoralproject.com/api/v1/timeseries"
 params = {
     "election_key": "congreso_espana_2027",
     "party": ["psoe", "pp", "vox", "sumar"],
@@ -53,7 +53,7 @@ for point in payload["items"][:5]:
 ```python
 import requests
 
-url = "https://polls.spainelectoralproject.com/api/v1/results"
+url = "https://pollsdb.spainelectoralproject.com/api/v1/results"
 limit = 1000
 offset = 0
 rows = []
@@ -82,7 +82,7 @@ Con `httr2`:
 library(httr2)
 
 resp <- request(
-  "https://polls.spainelectoralproject.com/api/v1/results"
+  "https://pollsdb.spainelectoralproject.com/api/v1/results"
 ) |>
   req_url_query(
     election_key = "congreso_espana_2027",
@@ -100,7 +100,7 @@ Para repetir un parámetro con `httr2`, usa `.multi = "explode"`:
 
 ```r
 resp <- request(
-  "https://polls.spainelectoralproject.com/api/v1/results"
+  "https://pollsdb.spainelectoralproject.com/api/v1/results"
 ) |>
   req_url_query(
     party = c("psoe", "pp", "vox"),
@@ -117,7 +117,7 @@ La API puede consultarse directamente desde un navegador cuando el origen está 
 
 ```js
 const url = new URL(
-  "https://polls.spainelectoralproject.com/api/v1/parties"
+  "https://pollsdb.spainelectoralproject.com/api/v1/parties"
 );
 url.searchParams.set("election_key", "congreso_espana_2027");
 url.searchParams.set("limit", "100");

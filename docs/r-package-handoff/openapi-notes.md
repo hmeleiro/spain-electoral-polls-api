@@ -14,9 +14,9 @@ With the local server running on port 8000:
 
 If production is deployed at the configured public domain:
 
-- Swagger UI: `https://polls.spainelectoralproject.com/docs`
-- ReDoc: `https://polls.spainelectoralproject.com/redoc`
-- OpenAPI JSON: `https://polls.spainelectoralproject.com/openapi.json`
+- Swagger UI: `https://pollsdb.spainelectoralproject.com/docs`
+- ReDoc: `https://pollsdb.spainelectoralproject.com/redoc`
+- OpenAPI JSON: `https://pollsdb.spainelectoralproject.com/openapi.json`
 
 ## Download OpenAPI JSON
 
@@ -29,7 +29,7 @@ curl http://localhost:8000/openapi.json -o docs/r-package-handoff/openapi.json
 From production:
 
 ```bash
-curl https://polls.spainelectoralproject.com/openapi.json -o docs/r-package-handoff/openapi.json
+curl https://pollsdb.spainelectoralproject.com/openapi.json -o docs/r-package-handoff/openapi.json
 ```
 
 A copy has also been generated in this folder as `openapi.json` by importing the FastAPI app and calling `app.openapi()`.

@@ -2,7 +2,7 @@
 
 All implemented endpoints are public and unauthenticated in v1. They are read-only and use `GET`.
 
-Production base URL: `https://polls.spainelectoralproject.com`
+Production base URL: `https://pollsdb.spainelectoralproject.com`
 
 Local base URL: `http://localhost:8000`
 

@@ -29,7 +29,7 @@ DATABASE_CONNECT_TIMEOUT=5
 API_ENV=development
 API_HOST=0.0.0.0
 API_PORT=8000
-CORS_ORIGINS=http://localhost:3000,https://polls.spainelectoralproject.com,https://hmeleiro.github.io
+CORS_ORIGINS=http://localhost:3000,https://polls.spainelectoralproject.com,https://pollsdb-api.spainelectoralproject.com
 ENABLE_ADMIN_ENDPOINTS=false
 CACHE_ENABLED=true
 CACHE_TTL_SECONDS=300
@@ -77,7 +77,7 @@ hugo --source docs
 ```
 
 GitHub Actions deploys the generated static site to GitHub Pages after changes under `docs/` reach `main`.
-The production API must allow the Pages origin (`https://hmeleiro.github.io`) in `CORS_ORIGINS` for the live explorer to work.
+The production API must allow the Pages origin (`https://pollsdb-api.spainelectoralproject.com`) in `CORS_ORIGINS` for the live explorer to work.
 
 Paginated endpoints return:
 
@@ -96,7 +96,7 @@ For the default public case, `/api/v1/polls` reads from `api_polls_public` and `
 curl:
 
 ```bash
-curl "https://polls.spainelectoralproject.com/api/v1/polls?election_key=congreso_espana_2027&limit=10"
+curl "https://pollsdb.spainelectoralproject.com/api/v1/polls?election_key=congreso_espana_2027&limit=10"
 ```
 
 Python:
@@ -104,7 +104,7 @@ Python:
 ```python
 import requests
 
-url = "https://polls.spainelectoralproject.com/api/v1/results"
+url = "https://pollsdb.spainelectoralproject.com/api/v1/results"
 params = {
     "election_key": "congreso_espana_2027",
     "party": "psoe",
@@ -119,7 +119,7 @@ R:
 ```r
 library(httr2)
 
-resp <- request("https://polls.spainelectoralproject.com/api/v1/results") |>
+resp <- request("https://pollsdb.spainelectoralproject.com/api/v1/results") |>
   req_url_query(
     election_key = "congreso_espana_2027",
     party = "psoe",

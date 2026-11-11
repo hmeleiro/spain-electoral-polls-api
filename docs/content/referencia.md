@@ -4,12 +4,12 @@ description: "Endpoints, filtros, paginación y modelos de respuesta de la versi
 ---
 
 <div class="api-facts">
-  <div><span>Base URL</span><strong>https://polls.spainelectoralproject.com</strong></div>
+  <div><span>Base URL</span><strong>https://pollsdb.spainelectoralproject.com</strong></div>
   <div><span>Versión</span><strong>/api/v1</strong></div>
   <div><span>Formato</span><strong>application/json</strong></div>
 </div>
 
-La API es pública, de solo lectura y no requiere autenticación. La documentación interactiva generada desde el esquema OpenAPI también está disponible en [Swagger UI](https://polls.spainelectoralproject.com/docs).
+La API es pública, de solo lectura y no requiere autenticación. La documentación interactiva generada desde el esquema OpenAPI también está disponible en [Swagger UI](https://pollsdb.spainelectoralproject.com/docs).
 
 ## Endpoints
 

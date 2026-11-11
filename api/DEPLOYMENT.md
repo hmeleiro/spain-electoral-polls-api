@@ -13,7 +13,7 @@
 The production `.env` file lives only on the server and must contain `DATABASE_URL`, `API_ENV`, `API_HOST`, `API_PORT`, `CORS_ORIGINS`, and `ENABLE_ADMIN_ENDPOINTS`.
 
 To let the documentation site's browser-based explorer call the API from GitHub Pages, include
-`https://hmeleiro.github.io` in the comma-separated production `CORS_ORIGINS`. If the documentation
+`https://pollsdb-api.spainelectoralproject.com` in the comma-separated production `CORS_ORIGINS`. If the documentation
 later uses a custom domain, add that exact origin as well.
 
 ## GitHub Secrets

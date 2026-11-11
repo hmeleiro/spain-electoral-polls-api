@@ -1,6 +1,6 @@
 # Examples for R Client
 
-Production base URL: `https://polls.spainelectoralproject.com`
+Production base URL: `https://pollsdb.spainelectoralproject.com`
 
 Local base URL: `http://localhost:8000`
 
@@ -17,7 +17,7 @@ curl "http://localhost:8000/health"
 Production:
 
 ```bash
-curl "https://polls.spainelectoralproject.com/health"
+curl "https://pollsdb.spainelectoralproject.com/health"
 ```
 
 ### Expected JSON response
@@ -149,7 +149,7 @@ curl "http://localhost:8000/api/v1/polls?limit=10"
 Production:
 
 ```bash
-curl "https://polls.spainelectoralproject.com/api/v1/polls?limit=10"
+curl "https://pollsdb.spainelectoralproject.com/api/v1/polls?limit=10"
 ```
 
 ### Expected JSON response
