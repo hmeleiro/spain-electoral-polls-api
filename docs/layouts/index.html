@@ -1,0 +1,105 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="container hero-layout">
+    <div class="hero-copy">
+      <div class="status-pill"><span class="status-dot"></span> API pública · v1</div>
+      <p class="eyebrow">Spain Electoral Project</p>
+      <h1>Las encuestas electorales,<br><span>en abierto.</span></h1>
+      <p class="hero-lead">Consulta estimaciones de voto, escaños, encuestadoras y series temporales a través de una API abierta, estable y documentada.</p>
+      <div class="hero-actions">
+        <a href="#explorador" class="button button-primary">Probar la API <span>→</span></a>
+        <a href="{{ "referencia/" | relURL }}" class="button button-secondary">Leer la documentación</a>
+      </div>
+      <div class="hero-meta">
+        <span>Sin autenticación</span><span>JSON</span><span>CORS</span><span>OpenAPI 3.1</span>
+      </div>
+    </div>
+    <div class="hero-console" aria-label="Ejemplo de respuesta de la API">
+      <div class="console-bar"><div><i></i><i></i><i></i></div><span>GET /api/v1/timeseries</span></div>
+      <div class="console-request"><span class="method">GET</span><span>/api/v1/timeseries</span><span class="query">?party=psoe&amp;limit=2</span></div>
+      <pre><code><span class="punct">{</span>
+  <span class="key">"items"</span>: <span class="punct">[</span>
+    <span class="punct">{</span>
+      <span class="key">"date"</span>: <span class="string">"2026-06-28"</span>,
+      <span class="key">"pollster_name"</span>: <span class="string">"40dB"</span>,
+      <span class="key">"short_name"</span>: <span class="string">"PSOE"</span>,
+      <span class="key">"vote_share"</span>: <span class="number">28.4</span>
+    <span class="punct">}</span>
+  <span class="punct">]</span>,
+  <span class="key">"limit"</span>: <span class="number">2</span>,
+  <span class="key">"offset"</span>: <span class="number">0</span>,
+  <span class="key">"total"</span>: <span class="number">1842</span>
+<span class="punct">}</span></code></pre>
+      <div class="console-foot"><span><i class="ok-dot"></i> 200 OK</span><span>application/json</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="signal-strip">
+  <div class="container signal-grid">
+    <div><strong>7</strong><span>recursos públicos</span></div>
+    <div><strong>1.000</strong><span>registros por petición</span></div>
+    <div><strong>0</strong><span>claves o tokens</span></div>
+    <div class="health-card"><span id="health-indicator" class="health-indicator"></span><strong id="health-label">Comprobando</strong><span>estado del servicio</span></div>
+  </div>
+</section>
+
+<section class="section container" id="recursos">
+  <div class="section-heading">
+    <div><p class="eyebrow">Recursos</p><h2>Una interfaz clara para cada pregunta</h2></div>
+    <p>Desde el catálogo electoral hasta observaciones listas para representar. Todos los listados comparten la misma paginación.</p>
+  </div>
+  <div class="resource-grid">
+    <a class="resource-card featured" href="{{ "referencia/#series-temporales" | relURL }}"><span class="resource-icon">⌁</span><div><span class="endpoint"><b>GET</b> /timeseries</span><h3>Series temporales</h3><p>Observaciones por fecha, partido y encuestadora listas para gráficos.</p></div><span class="arrow">↗</span></a>
+    <a class="resource-card" href="{{ "referencia/#encuestas" | relURL }}"><span class="resource-icon">▤</span><div><span class="endpoint"><b>GET</b> /polls</span><h3>Encuestas</h3><p>Fichas, trabajo de campo, muestra y fuente original.</p></div><span class="arrow">↗</span></a>
+    <a class="resource-card" href="{{ "referencia/#resultados" | relURL }}"><span class="resource-icon">◫</span><div><span class="endpoint"><b>GET</b> /results</span><h3>Resultados</h3><p>Estimaciones de voto y escaños en formato largo.</p></div><span class="arrow">↗</span></a>
+    <a class="resource-card" href="{{ "referencia/#catalogos" | relURL }}"><span class="resource-icon">◇</span><div><span class="endpoint"><b>GET</b> /parties</span><h3>Catálogos</h3><p>Elecciones, partidos y casas encuestadoras normalizados.</p></div><span class="arrow">↗</span></a>
+  </div>
+</section>
+
+<section class="explorer-section" id="explorador">
+  <div class="container">
+    <div class="section-heading light">
+      <div><p class="eyebrow">Explorador</p><h2>Haz una consulta real</h2></div>
+      <p>Configura una petición y consulta directamente la API. No necesitas registrarte ni obtener una clave.</p>
+    </div>
+    <div class="explorer">
+      <form id="api-explorer" class="explorer-form">
+        <label><span>Recurso</span><select id="explorer-endpoint" name="endpoint"><option value="/api/v1/polls">Encuestas</option><option value="/api/v1/results">Resultados</option><option value="/api/v1/timeseries" selected>Series temporales</option><option value="/api/v1/elections">Elecciones</option><option value="/api/v1/parties">Partidos</option><option value="/api/v1/pollsters">Encuestadoras</option><option value="/health">Estado del servicio</option></select></label>
+        <label class="filter-field"><span>Elección <small>opcional</small></span><input id="explorer-election" name="election_key" placeholder="congreso_espana_2027"></label>
+        <label class="filter-field party-field"><span>Partido <small>opcional</small></span><input id="explorer-party" name="party" placeholder="psoe"></label>
+        <label class="filter-field"><span>Encuestadora <small>opcional</small></span><input id="explorer-pollster" name="pollster" placeholder="40dB"></label>
+        <label class="limit-field"><span>Límite</span><select id="explorer-limit" name="limit"><option>5</option><option selected>10</option><option>25</option><option>100</option></select></label>
+        <button class="button button-primary" type="submit">Ejecutar <span>→</span></button>
+      </form>
+      <div class="request-preview"><span class="method">GET</span><code id="request-url"></code><button class="copy-button" type="button" data-copy-target="request-url">Copiar</button></div>
+      <div class="response-panel">
+        <div class="response-bar"><span>Respuesta</span><span id="response-meta">Lista para ejecutar</span></div>
+        <pre id="response-output"><code>{
+  "mensaje": "Selecciona tus filtros y pulsa Ejecutar"
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section container quickstart">
+  <div class="section-heading">
+    <div><p class="eyebrow">Inicio rápido</p><h2>De cero a datos en una línea</h2></div>
+    <a href="{{ "ejemplos/" | relURL }}">Ver ejemplos en Python y R →</a>
+  </div>
+  <div class="code-card">
+    <div class="code-tabs"><button class="active">curl</button><span>Sin headers · Sin autenticación</span></div>
+    <pre><code>curl "{{ .Site.Params.apiBaseURL }}/api/v1/polls?limit=10"</code></pre>
+    <button class="copy-button code-copy" type="button" data-copy-text='curl "{{ .Site.Params.apiBaseURL }}/api/v1/polls?limit=10"'>Copiar</button>
+  </div>
+</section>
+
+<section class="principles">
+  <div class="container principles-grid">
+    <div><p class="eyebrow">Diseñada para reutilizar</p><h2>Datos públicos con contexto, no solo números.</h2><p>La API conserva las fuentes, el periodo de trabajo de campo y la identidad de cada encuestadora para que cada cifra pueda interpretarse y auditarse.</p></div>
+    <ul><li><span>01</span><div><strong>Solo lectura</strong><p>Consultas seguras que no modifican la base de datos.</p></div></li><li><span>02</span><div><strong>Filtros consistentes</strong><p>Elección, territorio, partido, encuestadora y fechas.</p></div></li><li><span>03</span><div><strong>Fuentes trazables</strong><p>Enlaces a la publicación original cuando están disponibles.</p></div></li></ul>
+  </div>
+</section>
+{{ end }}

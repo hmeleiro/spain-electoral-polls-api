@@ -1,0 +1,17 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="{{ .Site.Home.RelPermalink }}" class="brand" aria-label="Spain Electoral Polls API, inicio">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span>Spain Electoral <strong>Polls API</strong></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false">
+      <span class="sr-only">Abrir menú</span><i></i><i></i><i></i>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="Navegación principal">
+      {{ range .Site.Menus.main }}
+        <a href="{{ .URL }}"{{ if $.IsMenuCurrent "main" . }} class="active" aria-current="page"{{ end }}>{{ .Name }}</a>
+      {{ end }}
+      <a class="nav-github" href="{{ .Site.Params.github }}" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>

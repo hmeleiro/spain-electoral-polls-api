@@ -1,0 +1,44 @@
+baseURL = "https://hmeleiro.github.io/spain-electoral-polls-api/"
+languageCode = "es"
+defaultContentLanguage = "es"
+title = "Spain Electoral Polls API"
+disableKinds = ["taxonomy", "term"]
+
+[build]
+  [build.buildStats]
+    enable = true
+
+[params]
+  description = "API abierta de encuestas electorales españolas para análisis, periodismo y aplicaciones." 
+  author = "Héctor Meleiro"
+  apiBaseURL = "https://polls.spainelectoralproject.com"
+  github = "https://github.com/hmeleiro/spain-electoral-polls-api"
+  parentProject = "https://spainelectoralproject.com/"
+  dashboard = "https://polls.spainelectoralproject.com/"
+  swagger = "https://polls.spainelectoralproject.com/docs"
+
+[menus]
+  [[menus.main]]
+    name = "Inicio"
+    pageRef = "/"
+    weight = 10
+  [[menus.main]]
+    name = "Referencia"
+    pageRef = "/referencia/"
+    weight = 20
+  [[menus.main]]
+    name = "Ejemplos"
+    pageRef = "/ejemplos/"
+    weight = 30
+  [[menus.main]]
+    name = "Datos"
+    pageRef = "/datos/"
+    weight = 40
+
+[markup]
+  [markup.highlight]
+    style = "github-dark"
+    noClasses = false
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

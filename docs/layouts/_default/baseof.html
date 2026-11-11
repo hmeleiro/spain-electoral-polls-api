@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="{{ .Site.LanguageCode }}">
+  <head>{{ partial "head.html" . }}</head>
+  <body data-api-base="{{ .Site.Params.apiBaseURL }}">
+    <a class="skip-link" href="#content">Saltar al contenido</a>
+    {{ partial "header.html" . }}
+    <main id="content">{{ block "main" . }}{{ end }}</main>
+    {{ partial "footer.html" . }}
+    {{ $js := resources.Get "js/site.js" | minify | fingerprint }}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  </body>
+</html>

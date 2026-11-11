@@ -1,0 +1,27 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <a href="{{ .Site.Home.RelPermalink }}" class="brand footer-brand">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>Spain Electoral <strong>Polls API</strong></span>
+      </a>
+      <p>Infraestructura abierta para observar, comparar y reutilizar encuestas electorales españolas.</p>
+    </div>
+    <div>
+      <h2>Documentación</h2>
+      <a href="{{ "referencia/" | relURL }}">Referencia API</a>
+      <a href="{{ "ejemplos/" | relURL }}">Ejemplos de uso</a>
+      <a href="{{ "datos/" | relURL }}">Datos y metodología</a>
+    </div>
+    <div>
+      <h2>Ecosistema</h2>
+      <a href="{{ .Site.Params.dashboard }}" target="_blank" rel="noopener">Visualizador de encuestas ↗</a>
+      <a href="{{ .Site.Params.parentProject }}" target="_blank" rel="noopener">Spain Electoral Project ↗</a>
+      <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener">Código fuente ↗</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {{ now.Year }} Spain Electoral Project</span>
+    <span>Datos abiertos · API pública de solo lectura</span>
+  </div>
+</footer>
